@@ -97,7 +97,6 @@ class PendisResource extends Resource
                                 ]),
                             TextInput::make('applicant_name')
                                 ->label('Nama Pemohon')
-                                ->readOnly()
                                 ->required(),
                         ]),
 
@@ -127,11 +126,9 @@ class PendisResource extends Resource
                                 ->addActionLabel('Tambah penerima manfaat'),
                             TextInput::make('district')
                                 ->label('Kecamatan')
-                                ->readOnly()
                                 ->autocomplete(),
                             TextInput::make('village')
                                 ->label('Desa/Kelurahan')
-                                ->readOnly()
                                 ->autocomplete(),
                         ]),
 
@@ -203,8 +200,7 @@ class PendisResource extends Resource
                                     '-' => 'gray',
                                 ]),
                             Textarea::make('subject')
-                                ->label('Perihal')
-                                ->readOnly(),
+                                ->label('Perihal'),
                             TextInput::make('financial_aid')
                                 ->label('Besar Bantuan'),
                             DatePicker::make('distribution_date')
@@ -224,7 +220,6 @@ class PendisResource extends Resource
                                 ->label('Jumlah Penerima Manfaat')
                                 ->numeric()
                                 ->default(1)
-                                ->readOnly()
                                 ->required(),
                             FileUpload::make('doc_upload')
                                 ->label('Upload Berkas')
