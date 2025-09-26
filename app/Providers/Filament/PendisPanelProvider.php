@@ -31,7 +31,7 @@ class PendisPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Pendis/Resources'), for: 'App\\Filament\\Pendis\\Resources')
             ->discoverPages(in: app_path('Filament/Pendis/Pages'), for: 'App\\Filament\\Pendis\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                //Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Pendis/Widgets'), for: 'App\\Filament\\Pendis\\Widgets')
             ->widgets([
