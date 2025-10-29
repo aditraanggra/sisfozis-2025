@@ -173,4 +173,5 @@ return [
 
     // Paksa Livewire memuat JS dari URL ini (ambil dari ENV di atas)
     'asset_url' => env('LIVEWIRE_ASSET_URL', null),
+    'middleware_group' => 'web',
 ];
