@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('web')
             ->login()
-            ->canAccess(fn() => Auth::check())
+            //->canAccess(fn() => Auth::check())
             ->routes(function (Panel $panel) {
                 Route::post('login', LoginController::class)
                     ->name('auth.login.submit');
