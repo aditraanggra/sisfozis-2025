@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 class AdminPanelProvider extends PanelProvider
@@ -30,7 +31,9 @@ class AdminPanelProvider extends PanelProvider
             ->font('Work Sans')
             ->id('admin')
             ->path('admin')
+            ->authGuard('web')
             ->login()
+            ->canAccess(fn() => Auth::check())
             ->routes(function (Panel $panel) {
                 Route::post('login', LoginController::class)
                     ->name('auth.login.submit');
