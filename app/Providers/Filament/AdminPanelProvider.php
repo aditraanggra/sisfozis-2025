@@ -31,13 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ->font('Work Sans')
             ->id('admin')
             ->path('admin')
-            ->authGuard('web')
+            //->authGuard('web')
             ->login()
             //->canAccess(fn() => Auth::check())
-            ->routes(function (Panel $panel) {
+            /* ->routes(function (Panel $panel) {
                 Route::post('login', LoginController::class)
                     ->name('auth.login.submit');
-            })
+            }) */
             ->colors([
                 'primary' => Color::Emerald,
             ])
