@@ -99,10 +99,12 @@
     <script>
         localStorage.setItem('theme', 'dark')
     </script>
-    @else
-    <script>
+    <!--  @else
+    <!-- <script>
         const loadDarkMode = () => {
-            window.theme = localStorage.getItem('theme') ?? @js(filament() - > getDefaultThemeMode() - > value)
+            window.theme = localStorage.getItem('theme') ?? {
+                !!json_encode(filament() - > getDefaultThemeMode() - > value) !!
+            };
 
             if (
                 window.theme === 'dark' ||
@@ -117,8 +119,8 @@
         loadDarkMode()
 
         document.addEventListener('livewire:navigated', loadDarkMode)
-    </script>
-    @endif
+    </script> 
+    @endif -->
 
     {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::HEAD_END, scopes: $livewire?->getRenderHookScopes()) }}
 </head>
@@ -143,7 +145,9 @@
 
     @if (filament()->hasBroadcasting() && config('filament.broadcasting.echo'))
     <script data-navigate-once>
-        window.Echo = new window.EchoFactory(@js(config('filament.broadcasting.echo')))
+        window.Echo = new window.EchoFactory({
+            !!json_encode(config('filament.broadcasting.echo')) !!
+        })
 
         window.dispatchEvent(new CustomEvent('EchoLoaded'))
     </script>

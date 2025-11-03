@@ -61,7 +61,7 @@ $livewire ??= null;
 
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::FOOTER, scopes: $livewire?->getRenderHookScopes()) }}
     </div>
-    {{-- >>> tambahkan dua baris berikut --}}
-    @livewireScriptConfig
-    <script src="{{ secure_url('/vendor/livewire/livewire.min.js') }}" data-navigate-once defer></script>
+    <!-- {{-- >>> tambahkan dua baris berikut --}}
+    //@livewireScriptConfig
+   // <script src="{{ secure_url('/vendor/livewire/livewire.min.js') }}" data-navigate-once defer></script> -->
 </x-filament-panels::layout.base>

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Controllers\Filament\Auth\LoginController;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +19,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
+use Illuminate\Support\Facades\Route;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -29,6 +31,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->routes(function (Panel $panel) {
+                Route::post('login', LoginController::class)
+                    ->name('auth.login.submit');
+            })
             ->colors([
                 'primary' => Color::Emerald,
             ])

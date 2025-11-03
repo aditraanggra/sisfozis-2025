@@ -172,6 +172,6 @@ return [
     'pagination_theme' => 'tailwind',
 
     // Paksa Livewire memuat JS dari URL ini (ambil dari ENV di atas)
-    'asset_url' => env('LIVEWIRE_ASSET_URL', null),
-    'middleware_group' => 'web',
+    //'asset_url' => env('LIVEWIRE_ASSET_URL', null),
+    //'middleware_group' => 'web',
 ];

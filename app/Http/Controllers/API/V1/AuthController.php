@@ -1,32 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class AuthController extends Controller
 {
-    //
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $credentials = $request->only('email', 'password');
 
-        if (!$user || !Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid credentials',
             ], 401);
         }
 
-        // Generate token
+        /** @var \App\Models\User $user */
+        $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('MobileAppToken')->plainTextToken;
 
         return response()->json([
