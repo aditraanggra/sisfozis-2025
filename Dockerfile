@@ -4,7 +4,7 @@ FROM php:8.3-cli-alpine AS vendor
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 
-# Tools & headers utk build ekstensi (termasuk ZIP)
+# Tools & headers untuk build ekstensi (termasuk ZIP)
 RUN apk add --no-cache \
     git unzip icu-dev oniguruma-dev \
     libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
@@ -12,20 +12,24 @@ RUN apk add --no-cache \
     libzip-dev zlib-dev zip \
     $PHPIZE_DEPS
 
-# Aktifkan ekstensi yg dibutuhkan saat composer resolve
+# Ekstensi PHP yang dibutuhkan saat composer resolve
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" intl mbstring pdo_mysql gd zip
 
-# Composer dari image resmi
+# Ambil composer dari image resmi
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install vendor dulu supaya cache efektif
+# 1) Copy file composer dulu agar cache efektif
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress
 
-# Lalu copy source code
+# 2) Install vendor TANPA menjalankan scripts (belum ada file artisan)
+RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --no-scripts
+
+# 3) Baru copy seluruh source code
 COPY . .
-RUN composer dump-autoload -o
+
+# 4) Optimize autoload TANPA scripts (package:discover nanti saat runtime)
+RUN composer dump-autoload -o --no-scripts
 
 
 
@@ -34,7 +38,7 @@ FROM dunglas/frankenphp:1-php8.3-alpine
 
 WORKDIR /app
 
-# Paket & ekstensi runtime (termasuk ZIP)
+# Paket & ekstensi runtime
 RUN apk add --no-cache \
     git unzip icu-dev oniguruma-dev \
     libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
@@ -46,11 +50,11 @@ RUN apk add --no-cache \
 # Copy app + vendor dari stage vendor
 COPY --from=vendor /app /app
 
-# Bersihkan cache & set permission (tanpa butuh .env)
+# Bersih-bersih cache & set permission (tanpa butuh .env)
 RUN php artisan route:clear && php artisan config:clear && php artisan view:clear \
     && chown -R www-data:www-data storage bootstrap/cache
 
-# Caddyfile
+# Caddyfile (FrankenPHP)
 COPY ./deploy/Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80
