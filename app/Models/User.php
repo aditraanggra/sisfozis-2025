@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Panel;
 
 class User extends Authenticatable
 {
@@ -46,8 +47,14 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function canAccessFilament(): bool
+    public function canAccessPanel(Panel $panel): bool
     {
+        // sementara untuk tes: izinkan semua user
         return true;
+
+        // kalau pakai role/permission:
+        // return $this->hasRole('admin'); // contoh
+        // atau pakai permission spesifik:
+        // return $this->can('access_admin_panel');
     }
 }
