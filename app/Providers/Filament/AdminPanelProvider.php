@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->font('Work Sans')
             ->id('admin')
             ->path('admin')
-            //->authGuard('web')
+            ->authGuard('web')
             ->login()
             //->canAccess(fn() => Auth::check())
             /* ->routes(function (Panel $panel) {
