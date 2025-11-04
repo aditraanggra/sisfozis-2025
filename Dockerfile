@@ -1,39 +1,58 @@
-# ---------- Stage 1: Composer (build dependencies) ----------
-FROM composer:2 AS vendor
+# -------- Stage 1: Vendor (Composer) --------
+# Pakai PHP CLI Alpine + aktifkan ekstensi yang dibutuhkan Composer (intl)
+FROM php:8.3-cli-alpine AS vendor
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 
-# Copy file composer lebih dulu agar cache efektif
+# Tools dan header untuk build ekstensi
+RUN apk add --no-cache \
+    git unzip icu-dev oniguruma-dev \
+    libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
+    mariadb-connector-c-dev $PHPIZE_DEPS
+
+# Aktifkan ekstensi yang dibutuhkan saat resolve dependency
+# (intl diperlukan oleh paket Filament)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) intl mbstring pdo_mysql gd
+
+# Ambil binary Composer dari image resmi
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy file composer dulu agar cache efisien
 COPY composer.json composer.lock ./
+
+# Install vendor (tanpa dev)
 RUN composer install --no-dev --prefer-dist --no-interaction --no-progress
 
-# Copy source code setelah vendor selesai supaya layer vendor tetap ke-cache
+# Baru copy source code lainnya
 COPY . .
 
 # Optimalkan autoload
 RUN composer dump-autoload -o
 
 
-# ---------- Stage 2: Runtime (FrankenPHP) ----------
+
+# -------- Stage 2: Runtime (FrankenPHP + Caddy) --------
 FROM dunglas/frankenphp:1-php8.3-alpine
 
-# OS & PHP extensions yang umum untuk Laravel
+WORKDIR /app
+
+# Pasang ekstensi PHP untuk runtime Laravel
 RUN apk add --no-cache \
-    git unzip bash icu-dev oniguruma-dev \
+    git unzip icu-dev oniguruma-dev \
     libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
     mariadb-connector-c-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) gd intl mbstring pdo_mysql opcache
 
-WORKDIR /app
-
-# Copy seluruh app + vendor dari stage vendor
+# Copy seluruh app (termasuk vendor) dari stage vendor
 COPY --from=vendor /app /app
 
-# (Opsional) Jangan jalankan perintah artisan yang butuh APP_KEY/.env saat build
-# Cukup pastikan cache bersih agar aman saat runtime
+# JANGAN jalankan artisan yang butuh .env/APP_KEY di build time
+# Hanya pastikan cache bersih & permission benar
 RUN php artisan route:clear && php artisan config:clear && php artisan view:clear \
-    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
+    && chown -R www-data:www-data storage bootstrap/cache
 
 # Caddyfile untuk FrankenPHP
 COPY ./deploy/Caddyfile /etc/caddy/Caddyfile
