@@ -1,10 +1,19 @@
 {
     frankenphp
+    auto_https off
 }
 
-:80 {
+# Layani hanya dua host ini, via HTTP (TLS diterminasi di EasyPanel)
+http://sisfozis-web.2rxwkd.easypanel.host, http://sisfozis.baznaskabcianjur.com {
     root * /app/public
     encode zstd gzip
     php_server
     file_server
+
+    # Opsional: header keamanan dasar
+    header {
+        X-Frame-Options DENY
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+    }
 }
