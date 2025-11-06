@@ -38,19 +38,21 @@ FROM dunglas/frankenphp:1-php8.3-alpine
 
 WORKDIR /app
 
-# Paket & ekstensi runtime
+# Paket & ekstensi runtime (mysql + pgsql)
 RUN apk add --no-cache \
     git unzip icu-dev oniguruma-dev \
     libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
     mariadb-connector-c-dev \
+    postgresql-dev \
     libzip-dev zlib-dev zip \
+    $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j"$(nproc)" gd intl mbstring pdo_mysql opcache zip
+    && docker-php-ext-install -j"$(nproc)" gd intl mbstring pdo_mysql pdo_pgsql opcache zip
 
 # Copy app + vendor dari stage vendor
 COPY --from=vendor /app /app
 
-# Bersih-bersih cache & set permission (tanpa butuh .env)
+# Bersih-bersih & permission
 RUN php artisan route:clear && php artisan config:clear && php artisan view:clear \
     && chown -R www-data:www-data storage bootstrap/cache
 
