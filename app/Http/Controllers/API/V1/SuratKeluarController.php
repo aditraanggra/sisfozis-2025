@@ -10,11 +10,13 @@ class SuratKeluarController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = (int) $request->query('per_page', 15);
-        $perPage = $perPage > 0 ? min($perPage, 100) : 15;
+        $perPage = (int) $request->query('per_page', 20);
+        $perPage = $perPage > 0 ? min($perPage, 100) : 20;
 
         return response()->json(
-            SuratKeluar::with('category')->paginate($perPage)
+            SuratKeluar::with('category')
+                ->orderByDesc('date_letter')
+                ->paginate($perPage)
         );
     }
 

@@ -10,11 +10,13 @@ class SuratMasukController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = (int) $request->query('per_page', 15);
-        $perPage = $perPage > 0 ? min($perPage, 100) : 15;
+        $perPage = (int) $request->query('per_page', 20);
+        $perPage = $perPage > 0 ? min($perPage, 100) : 20;
 
         return response()->json(
-            SuratMasuk::with('category')->paginate($perPage)
+            SuratMasuk::with('category')
+                ->orderByDesc('no_agenda')
+                ->paginate($perPage)
         );
     }
 
