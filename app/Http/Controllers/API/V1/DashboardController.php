@@ -20,14 +20,14 @@ class DashboardController extends Controller
         $totalSuratMasuk = SuratMasuk::count();
         $totalSuratKeluar = SuratKeluar::count();
 
-        $suratMasukThisMonth = SuratMasuk::whereBetween('date_letter', [$startOfMonth->toDateString(), $today])->count();
+        $suratMasukThisMonth = SuratMasuk::whereBetween('date_agenda', [$startOfMonth->toDateString(), $today])->count();
         $suratKeluarThisMonth = SuratKeluar::whereBetween('date_letter', [$startOfMonth->toDateString(), $today])->count();
 
-        $suratMasukToday = SuratMasuk::whereDate('date_letter', $today)->count();
+        $suratMasukToday = SuratMasuk::whereDate('date_agenda', $today)->count();
         $suratKeluarToday = SuratKeluar::whereDate('date_letter', $today)->count();
 
-        $masukDaily = SuratMasuk::selectRaw('date_letter as date, COUNT(*) as total')
-            ->whereBetween('date_letter', [$startDate, $today])
+        $masukDaily = SuratMasuk::selectRaw('date_agenda as date, COUNT(*) as total')
+            ->whereBetween('date_agenda', [$startDate, $today])
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('total', 'date');
