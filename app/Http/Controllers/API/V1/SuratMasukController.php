@@ -13,11 +13,12 @@ class SuratMasukController extends Controller
         $perPage = (int) $request->query('per_page', 20);
         $perPage = $perPage > 0 ? min($perPage, 100) : 20;
 
-        return response()->json(
-            SuratMasuk::with('category')
-                ->orderByDesc('no_agenda')
-                ->paginate($perPage)
-        );
+        $suratMasuk = SuratMasuk::with('category')
+            ->orderByDesc('no_agenda')
+            ->paginate($perPage)
+            ->through(fn (SuratMasuk $item) => $this->castNoAgenda($item));
+
+        return response()->json($suratMasuk);
     }
 
     public function store(Request $request)
@@ -49,7 +50,7 @@ class SuratMasukController extends Controller
 
     public function show(SuratMasuk $suratMasuk)
     {
-        return response()->json($suratMasuk->load('category'));
+        return response()->json($this->castNoAgenda($suratMasuk->load('category')));
     }
 
     public function update(Request $request, SuratMasuk $suratMasuk)
@@ -84,5 +85,12 @@ class SuratMasukController extends Controller
         $suratMasuk->delete();
 
         return response()->noContent();
+    }
+
+    private function castNoAgenda(SuratMasuk $suratMasuk): SuratMasuk
+    {
+        $suratMasuk->no_agenda = (int) $suratMasuk->no_agenda;
+
+        return $suratMasuk;
     }
 }
