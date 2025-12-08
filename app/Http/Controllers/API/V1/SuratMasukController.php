@@ -14,9 +14,9 @@ class SuratMasukController extends Controller
         $perPage = $perPage > 0 ? min($perPage, 100) : 20;
 
         $suratMasuk = SuratMasuk::with('category')
-            ->orderByDesc('no_agenda')
+            ->orderByRaw('CAST(no_agenda AS INTEGER) DESC')
             ->paginate($perPage)
-            ->through(fn (SuratMasuk $item) => $this->castNoAgenda($item));
+            ->through(fn(SuratMasuk $item) => $this->castNoAgenda($item));
 
         return response()->json($suratMasuk);
     }
