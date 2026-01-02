@@ -226,7 +226,13 @@ class SuratMasukResource extends Resource
             ])
             ->emptyStateHeading('Belum ada data surat masuk')
             ->emptyStateDescription('Input data surat masuk terlebih dahulu.')
-            ->defaultSort('no_agenda', 'desc');
+            ->defaultSort('date_agenda', 'desc')
+            ->modifyQueryUsing(
+                fn(Builder $query) => $query
+                    ->orderBy('date_agenda', 'desc')
+                    ->orderByRaw("CAST(REGEXP_REPLACE(no_agenda, '[^0-9]', '', 'g') AS INTEGER) DESC")
+                    ->orderBy('no_agenda', 'desc')
+            );
     }
 
     public static function getRelations(): array
