@@ -14,6 +14,7 @@ class SuratMasukController extends Controller
         $perPage = $perPage > 0 ? min($perPage, 100) : 20;
 
         $suratMasuk = SuratMasuk::with('category')
+            ->orderBy('date_agenda', 'desc')
             ->orderByRaw("CAST(REGEXP_REPLACE(no_agenda, '[^0-9]', '', 'g') AS INTEGER) DESC")
             ->orderBy('no_agenda', 'desc')
             ->paginate($perPage);
